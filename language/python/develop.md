@@ -16,7 +16,7 @@ In this module, we’ll walk through setting up a local development environment 
 
 ## Run a database in a container
 
-First, we’ll take a look at running a database in a container and how we use volumes and networking to persist our data and allow our application to talk with the database. Then we’ll pull everything together into a Compose file which allows us to setup and run a local development environment with one command. Finally, we’ll take a look at connecting a debugger to our application running inside a container.
+First, we’ll take a look at running a database in a container and how we use volumes and networking to persist our data and allow our application to talk with the database. Then we’ll pull everything together into a Compose file which allows us to setup and run a local development environment with one command.
 
 Instead of downloading MySQL, installing, configuring, and then running the MySQL database as a service, we can use the Docker Official Image for MySQL and run it in a container.
 
@@ -73,7 +73,7 @@ In the above command, we logged in to the MySQL database by passing the ‘mysql
 
 Next, we'll update the sample application we created in the [Build images](build-images.md#sample-application) module. To see the directory structure of the Python app, see [Python application directory structure](build-images.md#directory-structure).
 
-Okay, now that we have a running MySQL, let’s update the `app.py` to use MySQL as a datastore. Let’s also add some routes to our server. One for fetching records and one for inserting records.
+Okay, now that we have a running MySQL, let’s update the `app.py` to use MySQL as a datastore. Let’s also add some routes to our server. One for fetching records and one for creating our database and table.
 
 ```python
 import mysql.connector
@@ -141,7 +141,7 @@ if __name__ == "__main__":
     app.run(host ='0.0.0.0')
 ```
 
-We’ve added the MySQL module and updated the code to connect to the database server, created a database and table. We also created a couple of routes to save widgets and fetch widgets. We now need to rebuild our image so it contains our changes.
+We’ve added the MySQL module and updated the code to connect to the database server, created a database and table. We also created a route to fetch widgets. We now need to rebuild our image so it contains our changes.
 
 First, let’s add the `mysql-connector-python` module to our application using pip.
 
@@ -155,6 +155,8 @@ Now we can build our image.
 ```console
 $ docker build --tag python-docker-dev .
 ```
+
+If you have any containers running from the previous sections using the name `rest-server` or port 8000, [stop](./run-containers.md/#stop-start-and-name-containers) them now.
 
 Now, let’s add the container to the database network and then run our container. This allows us to access the database by its container name.
 
@@ -182,7 +184,7 @@ You should receive the following JSON back from our service.
 
 ## Use Compose to develop locally
 
-In this section, we’ll create a [Compose file](../../compose/index.md) to start our python-docker and the MySQL database using a single command. We’ll also set up the Compose file to start the `python-docker-dev` application in debug mode so that we can connect a debugger to the running process.
+In this section, we’ll create a [Compose file](../../compose/index.md) to start our python-docker and the MySQL database using a single command.
 
 Open the `python-docker` directory in your IDE or a text editor and create a new file named `docker-compose.dev.yml`. Copy and paste the following commands into the file.
 
@@ -221,6 +223,8 @@ Another really cool feature of using a Compose file is that we have service reso
 
 Note that we did not specify a network for those 2 services. When we use docker-compose it automatically creates a network and connect the services to it. For more information see [Networking in Compose](../../compose/networking.md)
 
+If you have any containers running from the previous sections, [stop](./run-containers.md/#stop-start-and-name-containers) them now.
+
 Now, to start our application and to confirm that it is running properly, run the following command:
 
 ```console
@@ -246,7 +250,7 @@ This is because our database is empty.
 
 ## Next steps
 
-In this module, we took a look at creating a general development image that we can use pretty much like our normal command line. We also set up our Compose file to map our source code into the running container and exposed the debugging port.
+In this module, we took a look at creating a general development image that we can use pretty much like our normal command line. We also set up our Compose file to map our source code into the running container.
 
 In the next module, we’ll take a look at how to set up a CI/CD pipeline using GitHub Actions. See:
 
