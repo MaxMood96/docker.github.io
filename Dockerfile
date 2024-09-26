@@ -115,7 +115,7 @@ COPY --from=generate /out /
 # > make deploy
 # or
 # > docker-compose up --build
-FROM nginx:alpine AS deploy
+FROM nginx:1.23.1-alpine AS deploy
 COPY --from=release / /usr/share/nginx/html
 COPY _deploy/nginx/default.conf /etc/nginx/conf.d/default.conf
 ARG JEKYLL_ENV
